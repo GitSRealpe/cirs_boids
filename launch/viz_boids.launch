@@ -1,0 +1,6 @@
+<launch>
+
+    <rosparam command="load" file="$(find cirs_boids)/config/boids.yaml"/>
+    <node name="boidsviz" pkg="cirs_boids" type="viz_boids" output="screen"></node>
+
+</launch>
