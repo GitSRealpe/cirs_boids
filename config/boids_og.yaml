@@ -1,0 +1,9 @@
+boids_settings:
+  - name: "bluefish"
+    alignmentWeight: 0.1
+    cohesionWeight: 0.1
+    separationWeight: 0.2
+    leaderAttractionWeight: 0.15
+    maxSpeed: 1.0
+    perceptionRadius : 2.0
+    separationRadius : 1.0
