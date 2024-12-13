@@ -23,7 +23,7 @@ include(./macros)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED)
 find_package(Eigen3 REQUIRED)
-
+find_package(Stonefish)
 
 list(APPEND CATKIN_SOURCES
     roscpp
@@ -36,18 +36,8 @@ list(APPEND CATKIN_SOURCES
     geometry_msgs
     rosbag
     rviz_visual_tools
+    stonefish_ros
   )
-
-if(NOT ${_host_name} STREQUAL "girona500")
-  message("not building in the girona")
-
-  list(APPEND CATKIN_SOURCES
-      stonefish_ros
-      interactive_markers
-  )
-
- 
-endif()
 
 find_package(catkin REQUIRED COMPONENTS ${CATKIN_SOURCES} message_generation actionlib genmsg)
 
@@ -104,6 +94,9 @@ target_link_libraries(cirs_boids ${catkin_LIBRARIES} ${LIBRARIES})
 
 add_executable(viz_boids scripts/viz_boids.cpp)
 target_link_libraries(viz_boids cirs_boids)
+
+add_executable(stonefish_boids scripts/stonefish_boids.cpp)
+target_link_libraries(stonefish_boids cirs_boids ${catkin_LIBRARIES} ${LIBRARIES} Stonefish::Stonefish)
 
 # add_script(test scripts)
 
