@@ -84,7 +84,7 @@ Flock::Flock(int numBoids, double worldSize, const Vector3f &initialLeaderPositi
 
     for (int i = 0; i < numBoids; i++)
     {
-        boids.push_back({Vector3f(dis(gen), dis(gen), dis(gen)),
+        boids.push_back({Vector3f(dis(gen), dis(gen), 1),
                          Vector3f(dis(gen) * 0.1f, dis(gen) * 0.1f, dis(gen) * 0.1f)});
     }
 }
