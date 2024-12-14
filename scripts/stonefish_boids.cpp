@@ -78,19 +78,19 @@ void MyManager::MakeFishes()
 
     sf::BSTrajectory *leader_traj = new sf::BSTrajectory(sf::PlaybackMode::REPEAT);
 
-    double t = 0;
-    while (t < 100)
+    double t = dt;
+    int iterations = 0;
+    while (iterations < 200)
     {
-        flock.setLeaderPosition(Vector3f(5 * sin(t), 5 * cos(t), 2));
+        flock.setLeaderPosition(Vector3f(5 * sin(t / 5), 5 * cos(t / 5), sin(t) + 2));
+        // flock.setLeaderPosition(Vector3f(0, 0, 2));
         auto leader_pos = flock.getLeaderPosition();
-        leader_traj->AddKeyPoint(t / 10, sf::Transform(sf::Quaternion(0, 0, 0, 1),
-                                                       sf::Vector3(leader_pos.x(),
-                                                                   leader_pos.y(),
-                                                                   leader_pos.z())));
+        leader_traj->AddKeyPoint(t, sf::Transform(sf::Quaternion(0, 0, 0, 1),
+                                                  sf::Vector3(leader_pos.x(),
+                                                              leader_pos.y(),
+                                                              leader_pos.z())));
         flock.updateBoids(dt);
 
-        // auto boid = flock.getBoids().at(0);
-        // for (const auto &boid : flock.getBoids())
         for (int i = 0; i < flock.getBoids().size(); i++)
         {
             auto boid = flock.getBoids().at(i);
@@ -114,11 +114,11 @@ void MyManager::MakeFishes()
             sf::Quaternion ori(orientation.x(), orientation.y(),
                                orientation.z(), orientation.w());
 
-            // boid_paths.at(i).push_back(sf::Transform(ori, point));
-            boid_paths.at(i)->AddKeyPoint(t / 10, sf::Transform(ori, point));
+            boid_paths.at(i)->AddKeyPoint(t, sf::Transform(ori, point));
         }
 
-        t += 1;
+        t += 0.1;
+        iterations++;
     }
 
     std::cout << boid_paths.size() << "\n";
