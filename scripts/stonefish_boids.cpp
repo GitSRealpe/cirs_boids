@@ -95,10 +95,22 @@ void MyManager::MakeFishes()
         {
             auto boid = flock.getBoids().at(i);
             sf::Vector3 point(boid.position.x(), boid.position.y(), boid.position.z());
-            // Orientation as quaternion
-            Vector3f direction = boid.velocity.normalized();
-            Eigen::Quaternionf orientation;
-            orientation.setFromTwoVectors(Vector3f::UnitX(), direction);
+
+            // // Orientation as quaternion
+            // Vector3f direction = boid.velocity.normalized();
+            // Eigen::Quaternionf orientation;
+            // orientation.setFromTwoVectors(Vector3f::UnitX(), direction);
+
+            // Orientation as quaternion with no roll
+            Vector3f forward = boid.velocity.normalized();   // Direction of movement
+            Vector3f up = Vector3f::UnitZ();                 // Fixed "up" direction
+            Vector3f right = up.cross(forward).normalized(); // Perpendicular right vector
+            up = forward.cross(right).normalized();          // Recompute orthogonal up vector
+            Eigen::Matrix3f rotationMatrix;
+            rotationMatrix.col(0) = forward; // Forward direction
+            rotationMatrix.col(1) = right;   // Right direction
+            rotationMatrix.col(2) = up;      // Up direction
+            Eigen::Quaternionf orientation(rotationMatrix);
             sf::Quaternion ori(orientation.x(), orientation.y(),
                                orientation.z(), orientation.w());
 
