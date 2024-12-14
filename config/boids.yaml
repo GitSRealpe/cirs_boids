@@ -1,5 +1,5 @@
 boids_settings:
-  - name: "bluefish"
+  - name: "yellowtang"
     alignmentWeight: 0.1
     cohesionWeight: 0.1
     separationWeight: 0.2
