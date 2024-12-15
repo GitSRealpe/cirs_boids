@@ -25,6 +25,15 @@ find_package(catkin REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Stonefish)
 
+find_package(ompl)
+message("ompl print")
+message("OMPL found? ${OMPL_FOUND}")
+message("2 ${OMPL_INCLUDE_DIRS}")
+message("3 ${OMPL_LIBRARY_DIRS}")
+message("4 ${OMPL_LIBRARY_DIR}")
+message("5 ${OMPL_LIBRARIES}")
+message("OMPL version ${OMPL_VERSION}")
+
 list(APPEND CATKIN_SOURCES
     roscpp
     rospy
@@ -74,17 +83,20 @@ list(APPEND INCLUDES
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
+  ${OMPL_INCLUDE_DIRS}
   )
 
 include_directories(SYSTEM ${INCLUDES})
 
 list(APPEND LIBRARIES
+  ${OMPL_LIBRARIES}
   ${catkin_LIBRARIES}
   ${Boost_LIBRARIES}  
 )
 
 add_library(${PROJECT_NAME}
   src/Flock.cpp
+  src/RRT.cpp
 )
 
 # target_link_libraries(${PROJECT_NAME} BT::behaviortree_cpp_v3  ${catkin_LIBRARIES})

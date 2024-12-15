@@ -1,7 +1,9 @@
 #include <ros/ros.h>
 
 #include <cirs_boids/Flock.hpp>
+#include <cirs_boids/RRT.hpp>
 #include <visualization_msgs/MarkerArray.h>
+#include <nav_msgs/Path.h>
 
 int main(int argc, char **argv)
 {
@@ -10,11 +12,12 @@ int main(int argc, char **argv)
 
     ros::Publisher markerArrayPub = nh.advertise<visualization_msgs::MarkerArray>("boids_markers", 10);
     ros::Publisher leaderMarkerPub = nh.advertise<visualization_msgs::Marker>("leader_marker", 10);
-    ros::Rate rate(30);
+    ros::Publisher leaderPathPub = nh.advertise<nav_msgs::Path>("leaderPath", 10, true);
 
     const int numBoids = 20;
-    const double worldSize = 20.0;
-    const double dt = 0.1f;
+    const double worldSize = 2.0;
+    const double dt = 30.0;
+    ros::Rate rate(dt);
 
     Flock flock(numBoids, worldSize, Vector3f(0, 0, 0));
 
@@ -38,14 +41,38 @@ int main(int argc, char **argv)
         break;
     }
 
+    RRT rrt;
+    auto leaderPath = rrt.doPlan(Eigen::Vector3f(0, 0, 5), Eigen::Vector3f(10, 0, 2));
+
+    nav_msgs::Path pathmsg;
+    pathmsg.header.frame_id = "world_ned";
+    for (auto &point : leaderPath)
+    {
+        geometry_msgs::PoseStamped poseS;
+        poseS.pose.orientation.w = 1;
+        poseS.pose.position.x = point.x();
+        poseS.pose.position.y = point.y();
+        poseS.pose.position.z = point.z();
+        pathmsg.poses.push_back(poseS);
+    }
+
+    leaderPathPub.publish(pathmsg);
+
     double t = 0.015;
+    int inc = 0;
     while (ros::ok())
     {
 
-        flock.setLeaderPosition(Vector3f(5 * sin(t), 5 * cos(t), 2));
-        flock.updateBoids(dt);
+        // flock.setLeaderPosition(Vector3f(5 * sin(t), 5 * cos(t), 2));
+        if (inc > leaderPath.size() - 1)
+        {
+            std::reverse(leaderPath.begin(), leaderPath.end());
+            inc = 0;
+        }
 
-        t += 0.015;
+        flock.setLeaderPosition(leaderPath.at(inc));
+        inc++;
+        flock.updateBoids(1.0 / dt);
 
         visualization_msgs::MarkerArray markerArray;
         int id = 0;
@@ -97,7 +124,7 @@ int main(int argc, char **argv)
         leaderMarker.header.stamp = ros::Time::now();
         leaderMarker.ns = "leader";
         leaderMarker.id = 0;
-        leaderMarker.type = visualization_msgs::Marker::ARROW;
+        leaderMarker.type = visualization_msgs::Marker::SPHERE;
         leaderMarker.action = visualization_msgs::Marker::ADD;
 
         // Arrow position and orientation for the leader
@@ -108,7 +135,7 @@ int main(int argc, char **argv)
         leaderMarker.pose.orientation.w = 1.0; // No specific orientation needed for leader marker
 
         // Arrow size
-        leaderMarker.scale.x = 1.0; // Length of the arrow shaft
+        leaderMarker.scale.x = 0.2; // Length of the arrow shaft
         leaderMarker.scale.y = 0.2; // Width of the arrow shaft
         leaderMarker.scale.z = 0.2; // Width of the arrow head
 
