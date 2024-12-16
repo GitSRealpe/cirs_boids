@@ -1,5 +1,6 @@
 boids_settings:
   - name: "yellowtang"
+    numboids: 20
     alignmentWeight: 0.1
     cohesionWeight: 0.1
     separationWeight: 0.2

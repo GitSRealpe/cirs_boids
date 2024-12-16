@@ -19,9 +19,9 @@ private:
     ros::ServiceClient client;
     ros::ServiceServer service;
 
-    const int numBoids = 20;
+    int numBoids = 20;
     const double worldSize = 2.0;
-    const double dt = 0.1;
+    // const double dt = 0.1;
     std::unique_ptr<Flock> flock;
 
     sf::AnimatedEntity *anim;
@@ -92,8 +92,6 @@ void MyManager::timerCb(const ros::TimerEvent &evt)
 void MyManager::MakeFishes()
 {
 
-    flock = std::make_unique<Flock>(numBoids, worldSize, Vector3f(0, 0, 0));
-
     XmlRpc::XmlRpcValue boids_cfg;
     bool gotten = nh.getParam("/boids_settings", boids_cfg);
     std::cout << gotten << "\n";
@@ -102,6 +100,8 @@ void MyManager::MakeFishes()
     {
         std::cout << "found: " << boids_cfg[b]["name"] << "\n";
         std::cout << boids_cfg[b]["name"] << "\n";
+        numBoids = static_cast<int>(boids_cfg[b]["numboids"]);
+        flock = std::make_unique<Flock>(numBoids, worldSize, Vector3f(0, 0, 0));
         std::cout << static_cast<double>(boids_cfg[b]["alignmentWeight"]) << "\n";
         flock->setAlignmentWeight(static_cast<double>(boids_cfg[b]["alignmentWeight"]));
         flock->setCohesionWeight(static_cast<double>(boids_cfg[b]["cohesionWeight"]));
